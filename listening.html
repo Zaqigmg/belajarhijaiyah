@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tes Listening Hijaiyah</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .quiz-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #7f763c43;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(157, 86, 86, 0.1);
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .question h3 {
+      margin: 10px 0;
+    }
+    .options button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin: 6px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #b52f2f;
+      background-color: #e84d4d;
+      cursor: pointer;
+      font-size: 1.4rem;
+      transition: background-color 0.3s;
+    }
+    .options button span {
+      font-size: 1rem;
+      font-style: italic;
+      color: #1f1b1b;
+    }
+    .options button:hover {
+      background-color: #2ecacf;
+    }
+    #score {
+      font-size: 1.2rem;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2>🎧 Tes Listening Huruf Hijaiyah</h2>
+    <div id="quiz"></div>
+    <div id="score"></div>
+  </div>
+
+  <script>
+    const soalHijaiyah = [
+      { bacaan: "ba", huruf: "ب", harakat: "dengan fatha" },
+      { bacaan: "ta", huruf: "ت", harakat: "dengan fatha" },
+      { bacaan: "tsa", huruf: "ث", harakat: "dengan fatha" },
+      { bacaan: "ja", huruf: "ج", harakat: "dengan fatha" },
+      { bacaan: "ha", huruf: "ح", harakat: "dengan fatha" },
+      { bacaan: "kha", huruf: "خ", harakat: "dengan fatha" },
+      { bacaan: "da", huruf: "د", harakat: "dengan fatha" },
+      { bacaan: "za", huruf: "ذ", harakat: "dengan fatha" },
+      { bacaan: "ra", huruf: "ر", harakat: "dengan fatha" },
+      { bacaan: "sa", huruf: "س", harakat: "dengan fatha" },
+      { bacaan: "sha", huruf: "ش", harakat: "dengan fatha" },
+      { bacaan: "dha", huruf: "ض", harakat: "dengan fatha" },
+      { bacaan: "a", huruf: "ا", harakat: "dengan fatha" },
+      { bacaan: "gha", huruf: "غ", harakat: "dengan fatha" },
+      { bacaan: "fa", huruf: "ف", harakat: "dengan fatha" },
+      { bacaan: "qa", huruf: "ق", harakat: "dengan fatha" },
+      { bacaan: "ka", huruf: "ك", harakat: "dengan fatha" },
+      { bacaan: "la", huruf: "ل", harakat: "dengan fatha" },
+      { bacaan: "ma", huruf: "م", harakat: "dengan fatha" },
+      { bacaan: "na", huruf: "ن", harakat: "dengan fatha" },
+      { bacaan: "ya", huruf: "ي", harakat: "dengan fatha" },
+      { bacaan: "di", huruf: "د", harakat: "dengan kasrah" },
+      { bacaan: "zu", huruf: "ذ", harakat: "dengan dammah" },
+      { bacaan: "shi", huruf: "ش", harakat: "dengan kasrah" },
+      { bacaan: "mu", huruf: "م", harakat: "dengan dammah" },
+      { bacaan: "ku", huruf: "ك", harakat: "dengan dammah" },
+      { bacaan: "ru", huruf: "ر", harakat: "dengan dammah" },
+      { bacaan: "ti", huruf: "ت", harakat: "dengan kasrah" },
+      { bacaan: "fi", huruf: "ف", harakat: "dengan kasrah" },
+      { bacaan: "qi", huruf: "ق", harakat: "dengan kasrah" },
+      { bacaan: "hu", huruf: "ه", harakat: "dengan dammah" }
+    ];
+
+    const acak = arr => arr.sort(() => Math.random() - 0.5);
+    const soalDipilih = acak([...soalHijaiyah]).slice(0, 15);
+
+    const quizContainer = document.getElementById("quiz");
+    let score = 0;
+
+    soalDipilih.forEach((soal, index) => {
+      const jawabanBenar = soal.bacaan;
+      const div = document.createElement("div");
+      div.className = "question";
+      const questionText = document.createElement("h3");
+      questionText.textContent = `Soal ${index + 1}`;
+      const playBtn = document.createElement("button");
+      playBtn.textContent = "🔊 Play";
+      playBtn.onclick = () => {
+        const utterance = new SpeechSynthesisUtterance(jawabanBenar);
+        utterance.lang = "ar-SA";
+        speechSynthesis.speak(utterance);
+      };
+
+      const optionsDiv = document.createElement("div");
+      optionsDiv.className = "options";
+      const pilihan = acak([soal, ...acak([...soalHijaiyah.filter(j => j.bacaan !== jawabanBenar)]).slice(0, 3)]);
+
+      pilihan.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `${opt.huruf} <span>${opt.harakat}</span>`;
+        btn.onclick = () => {
+          if (!btn.classList.contains("answered")) {
+            if (opt.bacaan === jawabanBenar) {
+              score++;
+              btn.style.backgroundColor = "#90be6d";
+            } else {
+              btn.style.backgroundColor = "#ef476f";
+            }
+            btn.classList.add("answered");
+            const allButtons = btn.parentElement.querySelectorAll("button");
+            allButtons.forEach(b => b.disabled = true);
+          }
+        };
+        optionsDiv.appendChild(btn);
+      });
+
+      div.appendChild(questionText);
+      div.appendChild(playBtn);
+      div.appendChild(optionsDiv);
+      quizContainer.appendChild(div);
+    });
+
+    const selesaiBtn = document.createElement("button");
+    selesaiBtn.textContent = "Selesai";
+    selesaiBtn.onclick = () => {
+      document.getElementById("score").textContent = `Skor kamu: ${score} dari 15`;
+    };
+    quizContainer.appendChild(selesaiBtn);
+  </script>
+</body>
+</html>
