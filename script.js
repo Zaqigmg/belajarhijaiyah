@@ -34,6 +34,8 @@ let zoomLevel = 1;
 let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
 
 document.addEventListener("DOMContentLoaded", function () {
+  if (!document.querySelector(".carousel")) return;
+
   const carousel = document.querySelector(".carousel");
   const sidebar = document.querySelector(".sidebar");
 
